@@ -29,9 +29,7 @@ object Task {
 
   def all(): List[Task] = tasks.values.toList.sorted(Ordering.by((task: Task) => task.id).reverse)
   import anorm._
-  import anorm.SqlParser._
-  import play.api.db._
-  import play.api.Play.current
+
   def allDb(): List[Task] = {
     DB.withConnection { implicit connection =>
       SQL("select * from bar").as(Bar.simple *)
