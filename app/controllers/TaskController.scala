@@ -1,30 +1,30 @@
 package controllers
 
 import javax.inject.Inject
-import models.Task
+import models.{Task, TaskDao}
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 
-class TaskController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class TaskController @Inject()(cc: ControllerComponents, taskDao: TaskDao) extends AbstractController(cc) {
 
   def tasks = Action {
-    Ok(Json.toJson(Task.all())).as("application/json")
+    Ok(Json.toJson(taskDao.all())).as("application/json")
   }
 
   def tasksGen = Action {
-    Task.create("label", "who", "time")
+    taskDao.create("label", "who", "time")
     Ok("added... !")
   }
 
   def addTask = Action {
     request =>
       val task = request.body.asJson.get.as[Task]
-      Task.create(task)
+      taskDao.create(task)
       Ok(Json.toJson(task))
   }
 
   def deleteTask(id: Long) = Action {
-    Task.delete(id)
+    taskDao.delete(id)
     Redirect(routes.TaskController.tasks())
   }
 
