@@ -7,10 +7,11 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 
 class TaskController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
-  def tasks = Action{
+  def tasks = Action {
     Ok(Json.toJson(Task.all())).as("application/json")
   }
-  def tasksGen = Action{
+
+  def tasksGen = Action {
     Task.create("label", "who", "time")
     Ok("added... !")
   }
@@ -22,7 +23,10 @@ class TaskController @Inject()(cc: ControllerComponents) extends AbstractControl
       Ok(Json.toJson(task))
   }
 
-  def deleteTask(id: Long) = TODO
+  def deleteTask(id: Long) = Action {
+    Task.delete(id)
+    Redirect(routes.TaskController.tasks())
+  }
 
   def completeTask(id: Long) = TODO
 
