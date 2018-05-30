@@ -8,7 +8,7 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 class TaskController @Inject()(cc: ControllerComponents, taskDao: TaskDao) extends AbstractController(cc) {
 
   def tasks = Action {
-    Ok(Json.toJson(taskDao.all())).as("application/json")
+    Ok(Json.toJson(taskDao.allDb())).as("application/json")
   }
 
   def tasksGen = Action {
