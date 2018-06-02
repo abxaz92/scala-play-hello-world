@@ -11,16 +11,17 @@ case class Task(var id: Option[Long], label: String, who: String, mytime: String
 
 object Task {
   implicit val taskJsonFormat: Format[Task] = Json.format[Task]
+
   import anorm.~
   import anorm.SqlParser._
 
-  val simple : RowParser[Task] = {
+  val simple: RowParser[Task] = {
     SqlParser.long("id") ~
       SqlParser.str("label") ~
       SqlParser.str("who") ~
       SqlParser.str("mytime") ~
-      short("ready") map {
-      case id ~ label ~ who ~ mytime ~ ready => new Task(Option.apply(id), label, who, mytime, ready)
+      int("ready") map {
+      case id ~ label ~ who ~ mytime ~ ready => new Task(Option.apply(id), label, who, mytime, ready.toShort)
     }
   }
 }
@@ -44,9 +45,14 @@ class TaskDao @Inject()(db: Database) {
     }
   }
 
-    def create(label: String, who: String, time: String): Unit = {
-    //    val task = Task(label, who, time, 1)
-    //    create(task)
+  def create(label: String, who: String, time: String): Unit = {
+    db.withConnection { implicit c =>
+      SQL(
+        """ INSERT INTO Task(label, who, mytime, ready)
+            VALUES ({label}, {who}, {mytime}, {ready})
+          """
+      ).on("label" -> label, "who" -> who, "mytime" -> time, "ready" -> 0).executeInsert()
+    }
   }
 
   def create(task: Task): Unit = {
