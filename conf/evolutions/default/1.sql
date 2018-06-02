@@ -9,5 +9,3 @@ CREATE TABLE task (
   mytime varchar(100),
   ready integer
 )
-DROP TABLE task;
-DROP TABLE task_id_seq;
