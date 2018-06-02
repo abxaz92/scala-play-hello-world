@@ -45,24 +45,25 @@ class TaskDao @Inject()(db: Database) {
     }
   }
 
-  def create(label: String, who: String, time: String): Unit = {
+  def create(task: Task): Unit = {
     db.withConnection { implicit c =>
       SQL(
         """ INSERT INTO Task(label, who, mytime, ready)
             VALUES ({label}, {who}, {mytime}, {ready})
           """
-      ).on("label" -> label, "who" -> who, "mytime" -> time, "ready" -> 0).executeInsert()
+      ).on("label" -> task.label, "who" -> task.who, "mytime" -> task.mytime, "ready" -> 0).executeInsert()
     }
   }
 
-  def create(task: Task): Unit = {
-    val id = count.addAndGet(1).longValue()
-    tasks += id -> task
-    task.id = Option(id)
-  }
-
-  def delete(id: Long) {
-    tasks -= id
+  def delete(id: Long) : Boolean ={
+    db.withConnection{
+      implicit c =>
+        SQL(
+          """
+             DELETE FROM Task
+             where id = {id}
+          """).on("id" -> id).executeUpdate() > 0
+    }
   }
 
   def complete(id: Long) {}
