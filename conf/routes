@@ -22,3 +22,5 @@ POST        /tasks/:id/delete          controllers.TaskController.deleteTask(id 
 POST        /tasks/:id/complete        controllers.TaskController.completeTask(id: Long)
 
 GET         /paypacks                  controllers.PaypackController.getAll
+
+GET         /payments                  controllers.PaymentController.getAll
