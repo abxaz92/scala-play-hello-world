@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.3-1102-jdbc41"
 
 )
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.2.3"
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 

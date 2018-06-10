@@ -21,6 +21,19 @@ class PaymentDao @Inject()(db: Database) {
     }
   }
 
+  def checkBalance(userId : String): Double ={
+    db.withConnection{implicit c =>
+      SQL(
+        """
+          SELECT p.balance
+          FROM Payment as p
+          WHERE p.userId = {userId}
+          ORDER BY p.payTimestamp DESC
+          LIMIT 1
+        """).on("userId" -> userId).as(SqlParser.scalar[Double].single)
+    }
+  }
+
   def insert(payment: Payment) = {
     db.withConnection { implicit c =>
       SQL(
