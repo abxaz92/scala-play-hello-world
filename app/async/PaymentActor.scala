@@ -11,6 +11,6 @@ import play.api.Logger
 class PaymentActor @Inject()(restClient: RestClient) extends Actor {
   val logger = Logger(this.getClass)
   override def receive = {
-    case msg => restClient.getPaypacks()
+    case msg => sender() ! restClient.getPaypacks()
   }
 }
