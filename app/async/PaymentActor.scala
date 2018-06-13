@@ -1,13 +1,15 @@
 package async
 
 import java.lang
+import javax.inject.Inject
 
 import akka.actor.Actor
+import da.RestClient
 import play.api.Logger
 
-class PaymentActor extends Actor {
+class PaymentActor @Inject()(restClient: RestClient) extends Actor {
   val logger = Logger(this.getClass)
   override def receive = {
-    case msg => logger.error(s" ${msg} thread is = ${Thread.currentThread().getName}")
+    case msg => restClient.getPaypacks()
   }
 }

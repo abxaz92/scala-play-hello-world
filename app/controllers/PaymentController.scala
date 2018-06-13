@@ -12,14 +12,17 @@ import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 import scala.concurrent._
+import akka.pattern.ask
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent._
 import ExecutionContext.Implicits.global
-
-import scala.concurrent.duration.DurationLong
 
 class PaymentController @Inject()(cc: ControllerComponents, paymentDao: PaymentDao, rest: RestClient) extends AbstractController(cc) {
   val logger = Logger(this.getClass)
 
   val system = ActorSystem("pay")
+
   val actor: ActorRef = system.actorOf(Props[PaymentActor], "PaymentActor" )
 
   def getAll() = Action {
@@ -28,11 +31,12 @@ class PaymentController @Inject()(cc: ControllerComponents, paymentDao: PaymentD
     val balance = paymentDao.checkBalance("userId")
     logger.info(s"user balance is '${balance}'")
 
-    system.scheduler.scheduleOnce(5000 millisecond, actor, rest.getPaypacks())
     val a = System.currentTimeMillis()
-//    for (i <- 0 to 10){
-//      pa ! rest.getPaypacks()
-//    }
+    for (i <- 0 to 10){
+      implicit val timeout = Timeout(5 seconds)
+      val resut = actor ? rest.getPaypacks()
+      resut.onComplete(res => logger.error(s"RSPONSE ${res}"))
+    }
     val b = System.currentTimeMillis() - a
     logger.error(s"All current millis ${b}")
     Ok(Json.toJson(paymentDao.findAll())).as("application/json")
