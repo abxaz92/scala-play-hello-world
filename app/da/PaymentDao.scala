@@ -2,11 +2,11 @@ package da
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
-import models.Payment
+import javax.inject.Inject
 import play.api.db.Database
 import anorm._
+import model.Payment
 
 class PaymentDao @Inject()(db: Database) {
 

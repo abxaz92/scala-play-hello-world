@@ -1,8 +1,7 @@
 package controllers
 
 import javax.inject.Inject
-
-import models.{Task, TaskDao}
+import model.{Task, TaskDao}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}

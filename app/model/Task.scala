@@ -1,4 +1,4 @@
-package models
+package model
 
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.{Inject, Singleton}

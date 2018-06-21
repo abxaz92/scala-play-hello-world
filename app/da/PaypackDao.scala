@@ -1,9 +1,8 @@
 package da
 
 import javax.inject.{Inject, Singleton}
-
 import anorm._
-import models.Paypack
+import model.Paypack
 import play.api.db.Database
 import play.api.libs.json.{Format, Json}
 

@@ -1,7 +1,7 @@
 package da
 
 import javax.inject.Inject
-import models.Paypack
+import model.Paypack
 import play.api.Logger
 import play.api.libs.ws.WSClient
 

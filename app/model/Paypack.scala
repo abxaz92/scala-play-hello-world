@@ -1,4 +1,4 @@
-package models
+package model
 
 import anorm.{RowParser, ~}
 import anorm.SqlParser.{double, long, str}

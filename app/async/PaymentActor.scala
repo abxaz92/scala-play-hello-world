@@ -4,7 +4,7 @@ import akka.actor.Actor
 import akka.pattern.pipe
 import da.RestClient
 import javax.inject.{Inject, Singleton}
-import models.Paypack
+import model.Paypack
 import play.api.Logger
 
 @Singleton
