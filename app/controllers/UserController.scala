@@ -9,7 +9,7 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import scala.concurrent.Future
 
 class UserController @Inject()(userDao: UserDao,
-cc: ControllerComponents) extends AbstractController(cc) {
+                               cc: ControllerComponents) extends AbstractController(cc) {
 
   import UserDao.parser
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,9 +23,22 @@ cc: ControllerComponents) extends AbstractController(cc) {
     }
   }
 
-  def getById(id: Long)= Action.async{
-    Future{
-      Ok(Json.toJson(userDao.findByID(id))).as(contentTypeJson)
+  def getById(id: Long) = Action.async {
+    Future {
+      val maybeUser = userDao.findByID(id)
+      if (maybeUser.isDefined)
+        Ok(Json.toJson(maybeUser)).as(contentTypeJson)
+      else
+        NotFound
+    }
+  }
+
+  def deleteById(id: Long) = Action.async {
+    Future {
+      if (userDao.deleteById(id))
+        NoContent
+      else
+        NotFound("user not found")
     }
   }
 

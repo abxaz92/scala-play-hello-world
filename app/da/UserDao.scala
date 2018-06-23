@@ -1,13 +1,12 @@
 package da
 
-import anorm.{RowParser, SqlParser, ~}
+import anorm.{NamedParameter, RowParser, SqlParser, ~}
 import javax.inject.{Inject, Singleton}
 import model.User
 import play.api.db.Database
 
 @Singleton
 class UserDao @Inject()(db: Database) extends AbstractDao[User](db, "users") {
-
 }
 
 object UserDao {
