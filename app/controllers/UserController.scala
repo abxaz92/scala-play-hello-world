@@ -9,15 +9,23 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import scala.concurrent.Future
 
 class UserController @Inject()(userDao: UserDao,
-                               cc: ControllerComponents) extends AbstractController(cc) {
+cc: ControllerComponents) extends AbstractController(cc) {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
   import UserDao.parser
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  private val contentTypeJson = "application/json"
 
   def getAll = Action.async {
     Future {
       val users: List[User] = userDao.findAll()
-      Ok(Json.toJson(users)).as("application/json")
+      Ok(Json.toJson(users)).as(contentTypeJson)
+    }
+  }
+
+  def getById(id: Long)= Action.async{
+    Future{
+      Ok(Json.toJson(userDao.findByID(id))).as(contentTypeJson)
     }
   }
 

@@ -26,3 +26,4 @@ GET         /paypacks                  controllers.PaypackController.getAll
 GET         /payments                  controllers.PaymentController.getAll
 
 GET         /user                      controllers.UserController.getAll
+GET         /user/:id                  controllers.UserController.getById(id: Long)
