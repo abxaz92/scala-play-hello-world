@@ -7,9 +7,13 @@ import play.api.db.Database
 
 class AbstractDao[T <: AbstractEntity](db: Database, tableName: String) {
 
-  def findAll()(implicit simple: RowParser[T]): List[T] = {
+  def findAll(limit: Option[Int], offset: Option[Int])(implicit simple: RowParser[T]): List[T] = {
     db.withConnection { implicit c =>
-      SQL(s"""SELECT * FROM $tableName""")
+      SQL(
+        s"""SELECT * FROM $tableName
+           limit {limit} offset {offset}
+         """)
+        .on("limit" -> limit.getOrElse(10), "offset" -> offset.getOrElse(0))
         .as(simple *)
     }
   }
