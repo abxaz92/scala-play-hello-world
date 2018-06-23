@@ -25,6 +25,6 @@ GET           /paypacks                  controllers.PaypackController.getAll
 
 GET           /payments                  controllers.PaymentController.getAll
 
-GET           /user                      controllers.UserController.getAll
+GET           /user                      controllers.UserController.getAll(limit: Option[String], offset: Option[String])
 GET           /user/:id                  controllers.UserController.getById(id: Long)
 DELETE        /user/:id                  controllers.UserController.deleteById(id: Long)

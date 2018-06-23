@@ -10,39 +10,35 @@ import scala.concurrent.Future
 import services.Implicits._
 
 class UserController @Inject()(userDao: UserDao, cc: ControllerComponents)
-    extends AbstractController(cc) {
+  extends AbstractController(cc) {
 
   import UserDao.parser
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  private val contentTypeJson = "application/json"
-
-  def getAll() = Action.async { implicit rq =>
-    Future {
-      val limit: Option[String] = rq.getQueryString("limit")
-      val offset: Option[String] = rq.getQueryString("offset")
-      val users: List[User] = userDao.findAll(limit, offset)
-      Ok(Json.toJson(users)).as(contentTypeJson)
-    }
+  def getAll(limit: Option[String], offset: Option[String]) = Action.async { implicit rq =>
+    val eventualUsers: Future[List[User]] = userDao.findAll(limit, offset)
+    eventualUsers.map(users => Ok(Json.toJson(users)))
   }
 
   def getById(id: Long) = Action.async {
-    Future {
-      val maybeUser = userDao.findByID(id)
+    val maybeUserFuture = userDao.findByID(id)
+    maybeUserFuture.map(maybeUser =>
       if (maybeUser.isDefined)
-        Ok(Json.toJson(maybeUser)).as(contentTypeJson)
+        Ok(Json.toJson(maybeUser))
       else
         NotFound
-    }
+    )
   }
 
   def deleteById(id: Long) = Action.async {
-    Future {
-      if (userDao.deleteById(id))
+    val deleteFuture = userDao.deleteById(id)
+    deleteFuture.map(res => {
+      if (res)
         NoContent
       else
         NotFound("user not found")
-    }
+
+    })
   }
 
 }

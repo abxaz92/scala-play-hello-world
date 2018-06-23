@@ -4,9 +4,10 @@ import anorm.{NamedParameter, RowParser, SqlParser, ~}
 import javax.inject.{Inject, Singleton}
 import model.User
 import play.api.db.Database
+import services.DbExecutionContext
 
 @Singleton
-class UserDao @Inject()(db: Database) extends AbstractDao[User](db, "users") {
+class UserDao @Inject()(db: Database, ec: DbExecutionContext) extends AbstractDao[User](db, "users", ec) {
 }
 
 object UserDao {
