@@ -17,14 +17,14 @@ class UserController @Inject()(userDao: UserDao, cc: ControllerComponents)
 
   def getAll(limit: Option[String], offset: Option[String]) = Action.async { implicit rq =>
     val eventualUsers: Future[List[User]] = userDao.findAll(limit, offset)
-    eventualUsers.map(users => Ok(Json.toJson(users)))
+    eventualUsers.map(users => Ok(users))
   }
 
   def getById(id: Long) = Action.async {
     val maybeUserFuture = userDao.findByID(id)
     maybeUserFuture.map(maybeUser =>
       if (maybeUser.isDefined)
-        Ok(Json.toJson(maybeUser))
+        Ok(maybeUser.get)
       else
         NotFound
     )
