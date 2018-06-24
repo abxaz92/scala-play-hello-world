@@ -3,16 +3,14 @@ package controllers
 import da.UserDao
 import javax.inject.Inject
 import model.User
-import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
+import services.Implicits._
 
 import scala.concurrent.Future
-import services.Implicits._
 
 class UserController @Inject()(userDao: UserDao, cc: ControllerComponents)
   extends AbstractController(cc) {
 
-  import UserDao.parser
   import scala.concurrent.ExecutionContext.Implicits.global
 
   def getAll(limit: Option[String], offset: Option[String]) = Action.async { implicit rq =>

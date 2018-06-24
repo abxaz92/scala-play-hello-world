@@ -1,16 +1,17 @@
 package da
 
-import anorm.{NamedParameter, RowParser, SQL}
-import javax.inject.Inject
-import model.{AbstractEntity, User}
+import anorm.{RowParser, SQL}
+import model.AbstractEntity
 import play.api.db.Database
 import services.DbExecutionContext
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class AbstractDao[T <: AbstractEntity](db: Database, tableName: String, ec: DbExecutionContext) {
+abstract class AbstractDao[T <: AbstractEntity](db: Database, tableName: String, ec: DbExecutionContext) {
 
-  def findAll(limit: Option[Int], offset: Option[Int])(implicit simple: RowParser[T]): Future[List[T]] = {
+  def getRowMapper : RowParser[T]
+
+  def findAll(limit: Option[Int], offset: Option[Int]): Future[List[T]] = {
     Future {
       db.withConnection { implicit c =>
         SQL(
@@ -18,12 +19,12 @@ class AbstractDao[T <: AbstractEntity](db: Database, tableName: String, ec: DbEx
            limit {limit} offset {offset}
          """)
           .on("limit" -> limit.getOrElse(10), "offset" -> offset.getOrElse(0))
-          .as(simple *)
+          .as(getRowMapper *)
       }
     }(ec)
   }
 
-  def findByID(id: Long)(implicit simple: RowParser[T]): Future[Option[T]] = {
+  def findByID(id: Long): Future[Option[T]] = {
     Future {
       db.withConnection {
         implicit c =>
@@ -31,7 +32,7 @@ class AbstractDao[T <: AbstractEntity](db: Database, tableName: String, ec: DbEx
             s"""
               SELECT * FROM $tableName
               WHERE id = {id}
-           """).on("id" -> id).as(simple singleOpt)
+           """).on("id" -> id).as(getRowMapper singleOpt)
       }
     }(ec)
   }
