@@ -1,6 +1,6 @@
 package da
 
-import anorm.{RowParser, SQL}
+import anorm._
 import model.AbstractEntity
 import play.api.db.Database
 import services.DbExecutionContext
@@ -9,16 +9,13 @@ import scala.concurrent.Future
 
 abstract class AbstractDao[T <: AbstractEntity](db: Database, tableName: String, ec: DbExecutionContext) {
 
-  def getRowMapper : RowParser[T]
+  def getRowMapper: RowParser[T]
 
   def findAll(limit: Option[Int], offset: Option[Int]): Future[List[T]] = {
     Future {
       db.withConnection { implicit c =>
-        SQL(
-          s"""SELECT * FROM $tableName
-           limit {limit} offset {offset}
-         """)
-          .on("limit" -> limit.getOrElse(10), "offset" -> offset.getOrElse(0))
+        SQL"""SELECT * FROM #$tableName
+             limit ${limit.getOrElse(10).toInt} offset ${offset.getOrElse(0).toInt}"""
           .as(getRowMapper *)
       }
     }(ec)
@@ -28,11 +25,10 @@ abstract class AbstractDao[T <: AbstractEntity](db: Database, tableName: String,
     Future {
       db.withConnection {
         implicit c =>
-          SQL(
-            s"""
-              SELECT * FROM $tableName
-              WHERE id = {id}
-           """).on("id" -> id).as(getRowMapper singleOpt)
+          SQL"""
+              SELECT * FROM #$tableName
+              WHERE id = $id
+           """.as(getRowMapper singleOpt)
       }
     }(ec)
   }
@@ -41,11 +37,10 @@ abstract class AbstractDao[T <: AbstractEntity](db: Database, tableName: String,
     Future {
       db.withConnection {
         implicit c =>
-          SQL(
-            s"""
-            DELETE FROM $tableName
-             WHERE id = {id}
-          """).on("id" -> id).execute()
+          SQL"""
+            DELETE FROM #$tableName
+             WHERE id = $id
+          """.execute()
       }
     }(ec)
   }
