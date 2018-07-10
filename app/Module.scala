@@ -3,7 +3,7 @@ import java.time.Clock
 
 import async.PaymentActor
 import play.api.libs.concurrent.AkkaGuiceSupport
-import services.{ApplicationTimer, AtomicCounter, Counter}
+import services.{ApplicationTimer, AtomicCounter, Counter, ExcelParser}
 
 /**
   * This class is a Guice module that tells Guice how to bind several
@@ -28,6 +28,7 @@ class Module extends AbstractModule with AkkaGuiceSupport {
 
     bindActor[PaymentActor]("payment-service")
 
+    bind(classOf[ExcelParser]).asEagerSingleton()
   }
 
 }
