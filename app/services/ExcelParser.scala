@@ -1,64 +1,58 @@
 package services
 
-import java.io.{File, FileInputStream}
 import javax.inject.Singleton
-
-import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import play.api.Logger
-import services.ExcelParser.RichCell
 
-import scala.util.{Failure, Success, Try}
+import scala.collection.JavaConverters._
+import scala.util.{Success, Try}
 
 @Singleton
 class ExcelParser {
-  val logger = Logger(this.getClass)
+  import ExcelParser._
 
-  parse()
+  val logger = Logger(classOf[ExcelParser])
 
-  def parse() = {
-    var is: FileInputStream = null
-    import scala.collection.JavaConverters._
-    def read: List[Tuple3[String, String, String]] = {
-      is = new FileInputStream(new File("C:\\Users\\Давид\\Desktop\\Address.xlsx"))
-      val workbook = new XSSFWorkbook(is)
-      val sheet = workbook.getSheetAt(0)
+  parse
 
-      val rowIterator = sheet.iterator.asScala
-      for(row <- rowIterator) yield {
-        val city = row.getCell(0).asString
-        val street = row.getCell(1).asString
-        val house = row.getCell(2).asString
-//        logger.info(s"$city : $street : $house")
-        Tuple3(city, street, house)
-      }
-    }.toList
+  private def workbook[T](path: String)(fn: XSSFWorkbook => T): Try[T] =
+    Try {
+      val pkg = OPCPackage.open(path)
+      val workbook = new XSSFWorkbook(pkg)
 
-    val res = Try({
-      read
-    }) match {
-      case Success(result) => result
-      case Failure(e) => is.close()
+      fn(workbook)
     }
-    logger.info(res.toString)
 
+  def parse: Try[List[Address]] = workbook(WorkbookPath) { wb =>
+    wb.getSheetAt(DefaultSheetIdx)
+      .iterator()
+      .asScala
+      .map(Address.fromRow)
+      .collect { case Success(address) => address }
+      .toList
   }
-
-
 }
 
 object ExcelParser {
 
-  implicit class RichCell(val cell: Cell) extends AnyVal {
-    def asString: String = {
-      cell.getCellType match {
-        case Cell.CELL_TYPE_STRING => cell.getStringCellValue
-        case Cell.CELL_TYPE_BOOLEAN => Some(cell.getBooleanCellValue).getOrElse("").toString
-        case Cell.CELL_TYPE_NUMERIC =>
-          val value = Some[Double](cell.getNumericCellValue).getOrElse("")
-          value.asInstanceOf[Double].toInt.toString
-      }
-    }
-  }
+  val DefaultSheetIdx = 0
+  val WorkbookPath = "C:\\Users\\Давид\\Desktop\\Address.xlsx"
 
+  val CityIdx = 0
+  val StreetIdx = 1
+  val HouseIdx = 2
+
+  case class Address(city: String, street: String, house: String)
+  object Address {
+    def fromRow(row: Row): Try[Address] =
+      Try {
+        val city = row.getCell(CityIdx).getStringCellValue
+        val street = row.getCell(StreetIdx).getStringCellValue
+        val house = row.getCell(HouseIdx).getStringCellValue
+
+        Address(city, street, house)
+      }
+  }
 }
