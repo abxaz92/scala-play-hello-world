@@ -4,25 +4,27 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET         /                          controllers.HomeController.index
+GET           /                          controllers.HomeController.index
 # An example controller showing how to use dependency injection
-GET         /count                     controllers.CountController.count
+GET           /count                     controllers.CountController.count
 
-GET         /hello                     controllers.HelloController.hello
+GET           /hello                     controllers.HelloController.hello
 # An example controller showing how to write asynchronous code
-GET         /message                   controllers.AsyncController.message
+GET           /message                   controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)
+GET           /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /tasks                     controllers.TaskController.tasks
-GET         /tasksGen                  controllers.TaskController.tasksGen
-POST        /tasks                     controllers.TaskController.addTask
-POST        /tasks/:id/delete          controllers.TaskController.deleteTask(id : Long)
-POST        /tasks/:id/complete        controllers.TaskController.completeTask(id: Long)
+GET           /tasks                     controllers.TaskController.tasks
+GET           /tasksGen                  controllers.TaskController.tasksGen
+POST          /tasks                     controllers.TaskController.addTask
+POST          /tasks/:id/delete          controllers.TaskController.deleteTask(id : Long)
+POST          /tasks/:id/complete        controllers.TaskController.completeTask(id: Long)
 
-GET         /paypacks                  controllers.PaypackController.getAll
+GET           /paypacks                  controllers.PaypackController.getAll
 
-GET         /payments                  controllers.PaymentController.getAll
+GET           /payments                  controllers.PaymentController.getAll
 
-GET         /user                      controllers.UserController.getAll
+GET           /user                      controllers.UserController.getAll(limit: Option[String], offset: Option[String])
+GET           /user/:id                  controllers.UserController.getById(id: Long)
+DELETE        /user/:id                  controllers.UserController.deleteById(id: Long)

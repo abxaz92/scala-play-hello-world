@@ -18,7 +18,9 @@ libraryDependencies ++= Seq(
   guice,
   evolutions,
   "org.playframework.anorm" %% "anorm" % "2.6.1",
-  "org.postgresql" % "postgresql" % "9.3-1102-jdbc41"
+  "org.postgresql" % "postgresql" % "9.3-1102-jdbc41",
+  "org.apache.poi" % "poi-ooxml" % "3.9",
+  "org.apache.poi" % "poi" % "3.9"
 
 )
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.2.3"

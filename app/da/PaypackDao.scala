@@ -14,10 +14,9 @@ class PaypackDao @Inject()(db: Database) {
   def findAll(): List[Paypack] = {
     db.withConnection {
       implicit c =>
-        SQL(
-          """
+        SQL"""
           SELECT * from paypack;
-          """).as(Paypack.simple *)
+          """.as(Paypack.simple *)
     }
   }
 }
